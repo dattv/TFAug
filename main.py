@@ -33,6 +33,7 @@ def main(input_dir=None, output_dir=None):
     tf_noise = tf_img_noise(img)
     tf_shift = tf_img_shift(img)
 
+
     with tf.Session() as sess:
 
         tf.summary.FileWriter("./graphs", sess.graph)

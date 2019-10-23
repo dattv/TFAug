@@ -18,7 +18,7 @@ def tf_img_rot90(img, probability=True):
     return tf.cond(choice_rotate90 < 0.5, lambda: img, lambda: tf.image.rot90(img))
 
 
-def tf_img_hue(img, max_delta=0.2):
+def tf_img_hue(img, max_delta=0.5):
     return tf.image.random_hue(img, max_delta)
 
 
@@ -26,7 +26,7 @@ def tf_img_saturation(img, min=0.5, max=1.5):
     return tf.image.random_saturation(img, min, max)
 
 
-def tf_img_brightness(img, max_delta=0.01):
+def tf_img_brightness(img, max_delta=0.3):
     return tf.image.random_brightness(img, max_delta)
 
 
@@ -156,9 +156,11 @@ def tf_img_shift(img):
         width = shape[1]
         num_channel = shape[2]
 
-    fluctuation = tf.random_uniform(shape=[], minval=1., maxval=1.4)
+    fluctuation_w = tf.random_uniform(shape=[], minval=1., maxval=1.4)
+    fluctuation_h = tf.random_uniform(shape=[], minval=1., maxval=1.4)
 
-    height_fluctuation = tf.cast(tf.cast(height, tf.float32) * fluctuation, tf.int32)
-    width_fluctuation = tf.cast(tf.cast(width, tf.float32) * fluctuation, tf.int32)
+    height_fluctuation = tf.cast(tf.cast(height, tf.float32) * fluctuation_h, tf.int32)
+    width_fluctuation = tf.cast(tf.cast(width, tf.float32) * fluctuation_w, tf.int32)
     new_img = tf.image.resize_image_with_crop_or_pad(img, height_fluctuation, width_fluctuation)
     return tf.image.random_crop(new_img, [height, width, num_channel])
+
