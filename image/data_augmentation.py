@@ -164,3 +164,19 @@ def tf_img_shift(img):
     new_img = tf.image.resize_image_with_crop_or_pad(img, height_fluctuation, width_fluctuation)
     return tf.image.random_crop(new_img, [height, width, num_channel])
 
+
+def tf_image_transform(image):
+    ran = tf.random_uniform([])
+    x = tf.random_uniform([], minval=-0.3, maxval=0.3)
+    x_com = tf.random_uniform([], minval=1 - x - 0.1, maxval=1 - x + 0.1)
+
+    y = tf.random_uniform([], minval=-0.3, maxval=0.3)
+    y_com = tf.random_uniform([], minval=1 - y - 0.1, maxval=1 - y + 0.1)
+
+    transforms = [x_com, x, 0, y, y_com, 0, 0.00, 0]
+
+    ran = tf.random_uniform([])
+    image = tf.cond(ran < 0.5,
+                    lambda: tf.contrib.image.transform(image, transforms, interpolation='NEAREST', name=None),
+                    lambda: tf.contrib.image.transform(image, transforms, interpolation='BILINEAR', name=None))
+    return image
