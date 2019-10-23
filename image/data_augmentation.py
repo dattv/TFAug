@@ -33,6 +33,12 @@ def tf_img_brightness(img, max_delta=0.3):
 def tf_img_constrast(img, min=0.5, max=1.5):
     return tf.image.random_contrast(img, min, max)
 
+def tf_img_gamma(img):
+    gamma_random = tf.random_uniform(shape=[], minval=1, maxval=1.05, dtype=tf.float32)
+    return tf.cast(tf.image.adjust_gamma(tf.cast(img, tf.float32), gamma_random), tf.uint8)
+
+def tf_img_gray(img):
+    return tf.image.rgb_to_grayscale(img)
 
 def tf_img_zoom(img, percent=0.75):
     shape = tf.shape(img)
@@ -180,3 +186,4 @@ def tf_image_transform(image):
                     lambda: tf.contrib.image.transform(image, transforms, interpolation='NEAREST', name=None),
                     lambda: tf.contrib.image.transform(image, transforms, interpolation='BILINEAR', name=None))
     return image
+
