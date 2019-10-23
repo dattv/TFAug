@@ -15,3 +15,4 @@ I collected and did some data augmentation method such as:
     tf_img_zoom2(img)
     tf_img_rorate(img)
     tf_img_erasing(img)
+    tf_img_shift(img)
