@@ -123,7 +123,42 @@ def tf_img_erasing(img):
     temp_img = tf.identity(img, name="temp_img")
     probability = tf.random_uniform(shape=[], minval=0., maxval=1., name="probability")
     result = tf.cond(probability < 0.5,
-                   lambda: img,
-                   lambda: tf.py_func(random_erase_np, [temp_img], tf.uint8, False))
+                     lambda: img,
+                     lambda: tf.py_func(random_erase_np, [temp_img], tf.uint8, False))
 
     return result
+
+
+def tf_img_noise(img):
+    shape = tf.shape(img)
+    if len(shape.shape) == 4:
+        height = shape[1]
+        width = shape[2]
+    else:
+        height = shape[0]
+        width = shape[1]
+
+    noise = tf.random_uniform(shape=[height, width, 3], minval=-50, maxval=50, dtype=tf.int32)
+    choice_noise = tf.random_uniform(shape=[], minval=0., maxval=1., name="choice_noise")
+
+    img = tf.cond(choice_noise < 0.5, lambda: tf.cast(img, tf.int32), lambda: tf.cast(img, tf.int32) + noise)
+    return tf.cast(tf.clip_by_value(img, clip_value_min=0, clip_value_max=255), tf.uint8)
+
+
+def tf_img_shift(img):
+    shape = tf.shape(img)
+    if len(shape.shape) == 4:
+        height = shape[1]
+        width = shape[2]
+        num_channel = shape[3]
+    else:
+        height = shape[0]
+        width = shape[1]
+        num_channel = shape[2]
+
+    fluctuation = tf.random_uniform(shape=[], minval=1., maxval=1.4)
+
+    height_fluctuation = tf.cast(tf.cast(height, tf.float32) * fluctuation, tf.int32)
+    width_fluctuation = tf.cast(tf.cast(width, tf.float32) * fluctuation, tf.int32)
+    new_img = tf.image.resize_image_with_crop_or_pad(img, height_fluctuation, width_fluctuation)
+    return tf.image.random_crop(new_img, [height, width, num_channel])

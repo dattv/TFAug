@@ -30,6 +30,9 @@ def main(input_dir=None, output_dir=None):
     tf_rot = tf_img_rorate(img)
     tf_errasing = tf_img_erasing(img)
 
+    tf_noise = tf_img_noise(img)
+    tf_shift = tf_img_shift(img)
+
     with tf.Session() as sess:
 
         tf.summary.FileWriter("./graphs", sess.graph)
@@ -48,7 +51,9 @@ def main(input_dir=None, output_dir=None):
             zoom, \
             rot, \
             zoom2, \
-            erasing = sess.run([tf_flip_lr,
+            erasing, \
+            noise, \
+                shift = sess.run([tf_flip_lr,
                                 tf_flip_ud,
                                 tf_saturation,
                                 tf_brightness,
@@ -59,7 +64,9 @@ def main(input_dir=None, output_dir=None):
                                 tf_zoom,
                                 tf_rot,
                                 tf_zoom2,
-                                tf_errasing], feed_dict={img: data})
+                                tf_errasing,
+                              tf_noise,
+                                  tf_shift], feed_dict={img: data})
 
             cv2.imwrite(os.path.join(output_dir, "flip_lr" + "_" + str(i) + ".jpg"), flip_lr)
             cv2.imwrite(os.path.join(output_dir, "flip_ud" + "_" + str(i) + ".jpg"), flip_ud)
@@ -72,6 +79,8 @@ def main(input_dir=None, output_dir=None):
             cv2.imwrite(os.path.join(output_dir, "rot" + "_" + str(i) + ".jpg"), rot)
             cv2.imwrite(os.path.join(output_dir, "zoomv2" + "_" + str(i) + ".jpg"), zoom2)
             cv2.imwrite(os.path.join(output_dir, "errasing" + "_" + str(i) + ".jpg"), erasing)
+            cv2.imwrite(os.path.join(output_dir, "noise" + "_" + str(i) + ".jpg"), noise)
+            cv2.imwrite(os.path.join(output_dir, "shift" + "_" + str(i) + ".jpg"), shift)
             i += 1
 
 
