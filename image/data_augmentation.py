@@ -233,3 +233,4 @@ def tf_image_pooling(img):
 
     new_img = tf.cast(new_img, tf.uint8)
     return tf.squeeze(new_img)
+
