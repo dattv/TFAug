@@ -40,7 +40,7 @@ def tf_img_gamma(img):
 
 
 def tf_img_gray(img):
-    return tf.image.rgb_to_grayscale(img)
+    return tf.image.grayscale_to_rgb(tf.image.rgb_to_grayscale(img))
 
 
 def tf_img_zoom(img, percent=0.75):
@@ -104,30 +104,6 @@ def tf_img_zoom2(img):
                                              (tf.less(choice_zoom2, 1.), f4)],
                                             default=f1)
 
-    # if choice_zoom2 < 0.25:
-    #     resized_height, resized_width = height, width
-    # elif choice_zoom2 >= 0.25 and choice_zoom2 < 0.5:
-    #     resized_height, resized_width = tf.cast(tf.multiply(tf.cast(height, tf.float32), percent2),
-    #                                             tf.int32), \
-    #                                     tf.cast(tf.multiply(tf.cast(width, tf.float32), percent2),
-    #                                             tf.int32)
-    # elif choice_zoom2 >= 0.5 and choice_zoom2 < 0.75:
-    #     resized_height, resized_width = tf.cast(tf.multiply(tf.cast(height, tf.float32), percent2),
-    #                                             tf.int32), \
-    #                                     tf.cast(tf.multiply(tf.cast(height, tf.float32), percent2),
-    #                                             tf.int32)
-    # else:
-    #     resized_height, resized_width = tf.cast(tf.multiply(tf.cast(width, tf.float32), percent2),
-    #                                             tf.int32), \
-    #                                     tf.cast(tf.multiply(tf.cast(width, tf.float32), percent2),
-    #                                             tf.int32)
-
-    # resized_height, resized_width = tf.cond(choice_zoom2 < 0.5,
-    #                                         lambda: (height, width),
-    #                                         lambda: (tf.cast(tf.multiply(tf.cast(height, tf.float32), percent2),
-    #                                                          tf.int32),
-    #                                                  tf.cast(tf.multiply(tf.cast(width, tf.float32), percent2),
-    #                                                          tf.int32)))
     zoom_in = tf.image.resize(img, [resized_height, resized_width])
     return tf.image.resize(zoom_in, [height, width])
 
@@ -221,7 +197,6 @@ def tf_img_shift(img):
 
 
 def tf_image_transform(image):
-    ran = tf.random_uniform([])
     x = tf.random_uniform([], minval=-0.3, maxval=0.3)
     x_com = tf.random_uniform([], minval=1 - x - 0.1, maxval=1 - x + 0.1)
 
@@ -235,3 +210,26 @@ def tf_image_transform(image):
                     lambda: tf.contrib.image.transform(image, transforms, interpolation='NEAREST', name=None),
                     lambda: tf.contrib.image.transform(image, transforms, interpolation='BILINEAR', name=None))
     return image
+
+
+def tf_image_pooling(img):
+    shape = tf.shape(img)
+    if len(shape.shape) == 4:
+        height = shape[1]
+        width = shape[2]
+        num_channel = shape[3]
+        new_img = img
+    else:
+        height = shape[0]
+        width = shape[1]
+        num_channel = shape[2]
+        new_img = tf.expand_dims(img, 0)
+
+    random = tf.random_uniform([], dtype=tf.float32)
+
+    new_img = tf.cond(random < 0.5,
+                      lambda: tf.nn.max_pool(tf.cast(new_img, tf.float32), [1, 4, 4, 1], strides=[1, 1, 1, 1], padding="SAME"),
+                      lambda: tf.nn.avg_pool(tf.cast(new_img, tf.float32), [1, 4, 4, 1], strides=[1, 1, 1, 1], padding="SAME"))
+
+    new_img = tf.cast(new_img, tf.uint8)
+    return tf.squeeze(new_img)

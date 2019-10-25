@@ -19,5 +19,6 @@ I collected and did some data augmentation method such as:
     tf_img_transform(img)
     tf_img_gray(img)
     tf_img_gamma(img)
+    tf_img_pooling(img)
     
 ![image](https://user-images.githubusercontent.com/29138292/67416742-92c7c580-f5f1-11e9-9de3-4d334d79f84d.png)    

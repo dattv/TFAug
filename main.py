@@ -38,6 +38,8 @@ def main(input_dir=None, output_dir=None):
     tf_gamma = tf_img_gamma(img)
 
     tf_gray = tf_img_gray(img)
+
+    tf_pooling = tf_image_pooling(img)
     with tf.Session() as sess:
 
         tf.summary.FileWriter("./graphs", sess.graph)
@@ -61,23 +63,25 @@ def main(input_dir=None, output_dir=None):
             shift, \
             transform, \
             gamma, \
-            gray = sess.run([tf_flip_lr,
-                             tf_flip_ud,
-                             tf_saturation,
-                             tf_brightness,
-                             tf_rot90,
-                             tf_hue,
-                             tf_constrast,
-                             rand,
-                             tf_zoom,
-                             tf_rot,
-                             tf_zoom2,
-                             tf_errasing,
-                             tf_noise,
-                             tf_shift,
-                             tf_transform,
-                             tf_gamma,
-                             tf_gray], feed_dict={img: data})
+            gray, \
+            pooling = sess.run([tf_flip_lr,
+                                tf_flip_ud,
+                                tf_saturation,
+                                tf_brightness,
+                                tf_rot90,
+                                tf_hue,
+                                tf_constrast,
+                                rand,
+                                tf_zoom,
+                                tf_rot,
+                                tf_zoom2,
+                                tf_errasing,
+                                tf_noise,
+                                tf_shift,
+                                tf_transform,
+                                tf_gamma,
+                                tf_gray,
+                                tf_pooling], feed_dict={img: data})
 
             cv2.imwrite(os.path.join(output_dir, "flip_lr" + "_" + str(i) + ".jpg"), flip_lr)
             cv2.imwrite(os.path.join(output_dir, "flip_ud" + "_" + str(i) + ".jpg"), flip_ud)
@@ -95,6 +99,7 @@ def main(input_dir=None, output_dir=None):
             cv2.imwrite(os.path.join(output_dir, "transform" + "_" + str(i) + ".jpg"), transform)
             cv2.imwrite(os.path.join(output_dir, "gamma" + "_" + str(i) + ".jpg"), gamma)
             cv2.imwrite(os.path.join(output_dir, "gray" + "_" + str(i) + ".jpg"), gray)
+            cv2.imwrite(os.path.join(output_dir, "pooling" + "_" + str(i) + ".jpg"), pooling)
             i += 1
 
 
